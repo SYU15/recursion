@@ -7,17 +7,20 @@
 var getElementsByClassName = function(className
 ){
   var hasClass = [];
-  var childNodes = document.body.childNodes;
-  var i = childNodes.length -1;
-  var recursiveCheck = function(n) { 
-    if (n === 0) {
-      return hasClass;
-    } else {
-      if (childNodes[n].nodeType === 1 && childNodes[n].classList.contains(className)) {
-        hasClass.push(childNodes[n].outerHTML);
+   var walkDom = function(node, func) {
+      func(node);
+      node = node.firstChild;
+      while (node) {
+        walkDom(node, func);
+        node = node.nextSibling;
       }
-      return recursiveCheck(n-1);
     }
-  }
-  recursiveCheck(i);
+
+    var allNodes = document.body;
+    walkDom(allNodes, function(node) {
+      if (node.nodeType === 1 && node.classList.contains(className)) {
+        hasClass.push(node);
+      }
+    });
+  return hasClass; 
 };
